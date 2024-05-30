@@ -1,0 +1,561 @@
+<!-- nws-pdp-template -->
+<div
+  class="nws-pdp-template"
+  {% if section.settings['section-color'] != blank %}
+    style="background-color:{{ section.settings.section-color }};"
+  {% endif %}
+>
+  <div class="container">
+    <div class="nws-pdp-template-content row">
+      <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="nws-pdp-template-gallery">
+          <!-- {% if product.variants.size > 0 %}
+            <div class="nws-padding">
+              {% for variant in product.variants %}
+                <div class="nws-variant-img nws-position-rel" data-image-id="{{ variant.id }}">
+                  <img class="nws-position-abs"
+                    src="{{ variant.image.src | img_url: "master" }}"
+                    alt="{{ variant.title }}"
+                    class="nws-position-abs"
+                    data-image-id="{{ variant.id }}"
+                    width="auto"
+                    height="auto"
+                  >
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %} -->
+          <div class="nws-pdp-template-oneImagePhoto clearfix">
+            {% for media in product.media %}
+              <div class="nws-pdp-slide-main nws-pdp-feature-img">
+                {% if media.media_type == 'image' %}
+                  <div
+                    class="nws-pdp-slide product-img--main__image nws-position-rel"
+                  >
+                    <img class="nws-position-abs"
+                      width="auto"
+                      height="auto"
+                      src="{{ media.src | product_img_url: '1000x' }}"
+                      width="100%"
+                      height="100%"
+                      alt="{{ media.alt }}"
+                    >
+                  </div>
+                {% endif %}
+                {% if media.media_type == 'video' %}
+                  <div class="nws-pdp-slide product-video">
+                    <video
+                      width="100%"
+                      height="100%"
+                      controls
+                      loop
+                      muted
+                      playsinline
+                      poster="{{ media.preview_image.url | replace: '_1_large', '_1_720x720' }}"
+                    >
+                      {% for source in media.sources %}
+                        <source src="{{ source.url }}" type="{{ source.content_type }}">
+                      {% endfor %}
+                    </video>
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+          <div class="nws-pdp-template-oneImageThumb clearfix">
+            {% for media in product.media %}
+              <div class="nws-pdp-slide-main nws-all-pdp-img">
+                {% if media.media_type == 'image' %}
+                  <div class="nws-pdp-slide">
+                    <img
+                      width="auto"
+                      height="auto"
+                      loading="lazy"
+                      src="{{ media.src | product_img_url: '120x' }}"
+                      width="100%"
+                      height="100%"
+                      alt="{{ media.alt }}"
+                    >
+                  </div>
+                {% endif %}
+                {% if media.media_type == 'video' %}
+                  <div class="nws-pdp-slide product-video">
+                    <video
+                      width="100%"
+                      height="100%"
+                      loop
+                      muted
+                      playsinline
+                      preload="auto"
+                      poster="{{ media.preview_image.url | replace: '_1_large', '_1_720x720' }}"
+                    >
+                      {% for source in media.sources %}
+                        <source src="{{ source.url }}" type="{{ source.content_type }}">
+                      {% endfor %}
+                    </video>
+                    <svg width="20" height="20" viewBox="0 0 65 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <g opacity="1">
+                      <rect x="0.189941" y="0.929688" width="64" height="64" rx="32" fill="black"></rect>
+                      <path d="M24.1899 24.4617C24.1899 22.9077 25.8859 21.9477 27.2189 22.7467L41.3319 31.2147C42.6259 31.9917 42.6259 33.8677 41.3319 34.6447L27.2189 43.1127C25.8859 43.9127 24.1899 42.9527 24.1899 41.3977V24.4617Z" fill="white"></path>
+                      </g>
+                    </svg>
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      
+<div class="col-lg-6 col-md-6 col-sm-12 mt-2 mt-md-0" id="buy-now">
+    <div class="nws-pdp-template-form">
+        <div class="nws-pdp-template-info">
+            <h1 class="nws-pdp-title">{{ product.title }}</h1>
+      {% assign current_variant = product.selected_or_first_available_variant %}
+<div class="product-price">
+    <span id="product-price">{{ current_variant.price | money }}</span>
+    {% if current_variant.compare_at_price > current_variant.price %}
+    <span id="compare-price">{{ current_variant.compare_at_price | money }}</span>
+    {% endif %}
+</div>
+            <div class="entry-short-description{% unless settings.show_shortdes %} d-none{% endunless %}">
+                {%- if product.metafields.meta.short_description -%}
+                {{ product.metafields.meta.short_description | html | strip_newlines }}
+                {% elsif product.description contains  '[/short description]' %}
+                {{ product.description | split: '[/short description]' | first | split: '[short description]'| last | html }}
+                {%-elsif settings.shortdes_type == 'short'-%}
+                {{ product.description | strip_html | truncatewords: 50 }}
+                {%-else-%}
+                {{ product.description | html | strip_newlines }}
+                {%-endif-%}
+            </div>
+            <form class="product-form product-form-product-template"
+                method="post"
+                action="/cart/add"
+                data-productid="{{ product.id }}"
+                id="product-form-{{ product.selected_or_first_available_variant.id }}"
+                accept-charset="UTF-8"
+                enctype="multipart/form-data"
+                novalidate="novalidate"
+                data-product-form=""
+            >
+                <input type="hidden" name="form_type" value="product">
+                <input
+                    class="product-variant-id"
+                    name="id[]"
+                    type="hidden"
+                    value="{{ product.selected_or_first_available_variant.id }}"
+                    data-id="{{ product.selected_or_first_available_variant.id }}"
+                >
+                  {% assign collection_handle = 'Add-Ons' %}
+              {% comment %}
+                  {% for product in collections[collection_handle].products %}
+                            <input type="text" name="id[]" value="{{ product.selected_or_first_available_variant.id }}" data-qty="1" class="nws-hidden-val" id="p_v{{ forloop.index }}" data-id="{{ product.selected_or_first_available_variant.id }}">
+                  {% endfor %}
+              {% endcomment %}
+                <input type="hidden" name="utf8" value="✓">
+                {%- if product.has_only_default_variant -%}
+                <input
+                    id="nws-variant-id"
+                    class="product-form__variants"
+                    data-productid="{{ product.id }}"
+                    type="hidden"
+                    value="{{ current_variant.id }}"
+                    name="id"
+                >
+                {% else %}
+              <div class="nws-variant-selection">
+    {% if product.variants.size > 1 %}
+    {% for option in product.options %}
+    {% if option == "Size" %}
+    <div class="nws-fieldset">
+        <label class="nws-opts-label">{{ option }}:</label>
+        <div id="nws-{{ option  | downcase }}" class="nws-option-selector nws-pdp-variant nws-radio-variation" data-index="option{{forloop.index}}">
+            {% capture option_index %}option{{ forloop.index }}{% endcapture %}
+            {% assign option_values = product.variants | map: option_index | uniq %}
+            {% for choice in option_values %}
+            <label>
+                <input type="radio" name="{{ option | replace: " ", "" | replace: "/", "" | downcase }}" value="{{ choice | replace: " ","" | downcase }}" data-option-index="{{ forloop.index }}" {% if forloop.first %}checked{% endif %}>
+                {{ choice }}
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+    {% elsif option == "Color" %}
+    <div class="nws-fieldset">
+        <label class="nws-opts-label">Color:</label>
+        <span id="open-color-drawer" class="nws-drawer-button">Select Color 
+            <svg width="6" height="11" viewBox="0 0 6 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1.41667 0.33965L5.66322 4.5804C5.80496 4.72254 5.88452 4.91481 5.88452 5.11523C5.88452 5.31565 5.80496 5.50793 5.66322 5.65007L1.41667 9.89082C1.31022 9.99781 1.17422 10.0708 1.02602 10.1004C0.877807 10.1301 0.7241 10.115 0.584494 10.0572C0.444887 9.99946 0.325706 9.90154 0.242144 9.77597C0.158582 9.6504 0.114425 9.50287 0.115304 9.35219L0.115303 0.878278C0.114424 0.727596 0.158581 0.580064 0.242143 0.454496C0.325705 0.328928 0.444886 0.231011 0.584493 0.173229C0.724099 0.115447 0.877806 0.100416 1.02601 0.130055C1.17422 0.159695 1.31022 0.232661 1.41667 0.33965Z" fill="black"/>
+            </svg>
+        </span>
+    </div>
+    <div id="color-drawer" class="nws-drawer">
+        <span id="close-color-drawer" class="nws-drawer-close">&times;</span>
+        <div class="nws-drawer-content">
+            <div id="nws-{{ option  | downcase }}" class="nws-option-selector nws-pdp-variant nws-radio-variation" data-index="option{{forloop.index}}">
+                {% capture option_index %}option{{ forloop.index }}{% endcapture %}
+                {% assign option_values = product.variants | map: option_index | uniq %}
+                {% for choice in option_values %}
+                <label>
+                    <input type="radio" name="{{ option | replace: " ", "" | replace: "/", "" | downcase }}" value="{{ choice | replace: " ","" | downcase }}" data-option-index="{{ forloop.index }}" {% if forloop.first %}checked{% endif %}>
+                    {% for block in product.metafields.custom.coloroptions.value %}
+                    {% if block.color_name == choice %}
+                    <img src="{{ block.image | img_url : '80x' }}" alt="{{ block.color_name }}">
+                    {% endif %}
+                    {% endfor %}
+                    {{ choice }}
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+</div>
+                <div class="nws-overlay"></div>
+                {% endif %}
+                {% for variant in product.variants %}
+                <input type="hidden" name="{{ variant.title | replace: " ", "" | replace: "/", "" | downcase }}" value="{{ variant.id }}">
+                {% endfor %}
+                <div class="nws-quantity-box nws-fieldset">
+                    <label class="nws-opts-label" for="qty-{{section.id}}">Quantity:</label>
+                    <div class="nws-pdp-quantity quantity js-item-quantity item-quantity--{{ section.id }}">
+                        <div class="nws-quantity-col">
+                            <div class="control">
+                                <a class="btn-number qtyminus quantity-minus" href="#"></a>
+                                <input
+                                    type="text"
+                                    data-step="1"
+                                    name="quantity"
+                                    data-min="1"
+                                    value="1"
+                                    id="qty-{{section.id}}"
+                                    class="input-qty input-text qty {{settings.atc_btn_rounded | replace: 'btn-', ''}}"
+                                    size="4"
+                                    pattern="[0-9]*"
+                                >
+                                <a class="btn-number qtyplus quantity-plus" href="#"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nws-pdp-submit-div">
+                    {% if product.available %}
+                    <input id="nws-pdp-submit" type="submit" value="Add To Cart" class="btn cls-chr nws-pdp-submit">
+                    {% else %}
+                    <input type="button" value="Sold Out" class="btn nws-pdp-submit" disabled="disabled">
+                    {% endif %}
+                </div>
+                <div class="nws-addons-wrapper">
+                    <h3 class="nws-addon-title">Add Ons & Modifiers</h3>
+                    <span class="nws-addon-subhead">Make it Extra Special</span>
+                  <div class="nws-extras-row nws-bundle-wrapper">
+
+                  </div>
+                  {% comment %}       
+                  <ul class="nws-bundle-wrapper">
+                      {% assign collection_handle = 'Add-Ons' %}
+                      {% for product in collections[collection_handle].products %}
+                      <li class="nws-bundle-text">
+                          <div class="wrapper_box">
+                              <div class="check">
+                                  <input type="checkbox" name="product{{ forloop.index }}_chk" id="product{{ forloop.index }}_chk">
+                              </div>
+                              <div class="bundle-img">
+                                  <img src="{{ product.featured_image | img_url: '70x' }}" alt="{{ product.title }}" />
+                              </div>
+                              <div class="pdp-content">
+                                  <span class="pdp-content-title">{{ product.title }}</span>
+                                  <span class="storage-product-price">{{ product.price | money }}</span>
+                                  <input id="product{{ forloop.index }}_id" name="product{{ forloop.index }}_id" value="{{ product.selected_or_first_available_variant.id }}" type="hidden">
+                                  <input id="v{{ product.selected_or_first_available_variant.id }}" data-price="{{ product.price | money_without_currency }}" type="hidden">
+                              </div>
+                          </div>
+                      </li>
+                      {% endfor %}
+                  </ul>
+                  {% endcomment %}
+                </div>
+                                   {% comment %}
+                <div class="custom_selector_product_total">
+                    {% for product in collections[collection_handle].products %}
+                    <input type="hidden" data-qty="1" id="p_v{{ forloop.index }}" data-price="{{ product.price | money_without_currency }}" data-id="{{ product.selected_or_first_available_variant.id }}">
+                    {% endfor %}
+                </div>  
+                   {% endcomment %}
+            </form>
+            <!-- <div class="atc_btn">
+                <button onclick="frequently_bundle()" type="button" name="add" class="btn btn--add-to-cart">
+                    <span class="btn__text">Add to cart</span>
+                </button>
+            </div> -->
+        </div>
+    </div>
+  </div>
+    </div>
+  </div>
+</div>
+<div class="nws-tabs">
+  <div class="nws-custom-container">
+    <ul class="nws-tab-list">
+        <li class="nws-tab nws-active">Description</li>
+        <li class="nws-tab">Reviews</li>
+        <li class="nws-tab">Delivery Info</li>
+    </ul>
+    <div class="nws-tab-content nws-active">
+
+        <div>{{ product.description }}</div>
+    </div>
+    <div class="nws-tab-content">
+
+        <p>This is the reviews content.</p>
+    </div>
+    <div class="nws-tab-content">
+  
+        <p>This is the delivery info content.</p>
+    </div>
+  </div>
+</div>
+<div class="add-on-btn">                
+  <button id="nwsOpenDrawer">
+  </button>
+   <svg width="126" height="95" viewBox="0 0 126 95" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect y="47" width="126" height="48" rx="2" fill="#E6CA9B"/>
+  <path d="M28.5638 65.0537H23.3812L22.0322 68H20.0621L26.0612 55.1143L31.8385 68H29.8418L28.5638 65.0537ZM27.8273 63.332L26.0257 59.2143L24.1444 63.332H27.8273ZM33.3649 68V55.8864H35.9119C37.2075 55.8864 38.2281 56.0254 38.9736 56.3035C40.2988 56.7945 41.3016 57.6524 41.982 58.8771C42.479 59.7764 42.7274 60.7969 42.7274 61.9388C42.7274 64.039 41.9199 65.6719 40.3047 66.8374C39.5297 67.3936 38.728 67.7367 37.8997 67.8669C37.3554 67.9556 36.681 68 35.8764 68H33.3649ZM35.193 66.2784H36.0184C36.9472 66.2784 37.6897 66.1719 38.2459 65.9589C39.1274 65.6157 39.8078 65.0389 40.287 64.2284C40.6834 63.5539 40.8816 62.7937 40.8816 61.9476C40.8816 60.9537 40.6124 60.0751 40.074 59.3119C39.5356 58.5546 38.8079 58.0547 37.8909 57.8121C37.3939 57.6761 36.7697 57.608 36.0184 57.608H35.193V66.2784ZM45.0437 68V55.8864H47.5906C48.8863 55.8864 49.9069 56.0254 50.6523 56.3035C51.9776 56.7945 52.9804 57.6524 53.6608 58.8771C54.1577 59.7764 54.4062 60.7969 54.4062 61.9388C54.4062 64.039 53.5986 65.6719 51.9835 66.8374C51.2085 67.3936 50.4068 67.7367 49.5785 67.8669C49.0342 67.9556 48.3598 68 47.5551 68H45.0437ZM46.8718 66.2784H47.6971C48.626 66.2784 49.3685 66.1719 49.9246 65.9589C50.8061 65.6157 51.4865 65.0389 51.9657 64.2284C52.3621 63.5539 52.5603 62.7937 52.5603 61.9476C52.5603 60.9537 52.2911 60.0751 51.7528 59.3119C51.2144 58.5546 50.4867 58.0547 49.5696 57.8121C49.0727 57.6761 48.4485 57.608 47.6971 57.608L46.8718 57.608V66.2784ZM67.0257 55.6557C68.8597 55.6557 70.4039 56.3419 71.6581 57.7145C72.7704 58.9274 73.3265 60.3414 73.3265 61.9565C73.3265 63.0688 73.0455 64.11 72.4834 65.0803C71.9273 66.0387 71.1671 66.799 70.2027 67.361C69.2088 67.9408 68.1202 68.2307 66.9369 68.2307C65.8897 68.2307 64.8869 67.9704 63.9285 67.4498C62.7748 66.8227 61.914 65.9648 61.346 64.8762C60.8905 64.0006 60.6627 63.0066 60.6627 61.8944C60.6627 60.1668 61.3076 58.6848 62.5973 57.4483C63.2777 56.7916 64.0646 56.3124 64.9579 56.0106C65.656 55.774 66.3453 55.6557 67.0257 55.6557ZM67.0079 57.3773C65.588 57.3773 64.4402 57.9098 63.5646 58.9747C62.8606 59.8326 62.5086 60.8117 62.5086 61.9121C62.5086 63.2551 62.9582 64.3585 63.8575 65.2223C64.7509 66.0802 65.7832 66.5091 66.9547 66.5091C67.7948 66.5091 68.5728 66.2961 69.2886 65.8701C70.0223 65.4323 70.5784 64.8496 70.957 64.1219C71.3061 63.4592 71.4806 62.7345 71.4806 61.9476C71.4806 60.6756 71.0517 59.59 70.1938 58.6907C69.3478 57.8151 68.2858 57.3773 67.0079 57.3773ZM75.625 68V55.0611L84.4551 64.2994V55.8864H86.2832V68.7455L77.4531 59.516V68H75.625ZM96.054 57.6879L94.5719 58.5665C94.353 58.2056 94.1608 57.9512 93.9951 57.8033C93.6874 57.5193 93.2792 57.3773 92.7704 57.3773C92.238 57.3773 91.8061 57.5282 91.4748 57.8299C91.1553 58.1198 90.9955 58.4718 90.9955 58.8859C90.9955 59.2883 91.1878 59.6225 91.5724 59.8888C91.8149 60.0603 92.0634 60.1994 92.3178 60.3059L93.5248 60.794C94.5364 61.2081 95.2582 61.6991 95.6901 62.2671C96.1398 62.8587 96.3646 63.5569 96.3646 64.3615C96.3646 65.527 95.9534 66.4884 95.131 67.2457C94.4211 67.9024 93.5336 68.2307 92.4687 68.2307C91.102 68.2307 90.046 67.6924 89.3005 66.6156C88.9515 66.1127 88.7178 65.459 88.5994 64.6543L90.4453 64.2461C90.5222 64.8614 90.6376 65.3051 90.7914 65.5773C90.9393 65.8376 91.1523 66.0476 91.4304 66.2074C91.7676 66.4085 92.1374 66.5091 92.5397 66.5091C93.155 66.5091 93.652 66.2902 94.0306 65.8524C94.3619 65.4737 94.5276 65.0182 94.5276 64.4857C94.5276 63.8053 94.2465 63.2758 93.6845 62.8972C93.4123 62.7197 93.1165 62.5629 92.797 62.4269L91.6256 61.9299C89.9691 61.2318 89.1408 60.2082 89.1408 58.8593C89.1408 57.7766 89.6022 56.9306 90.5252 56.3212C91.1996 55.8775 91.951 55.6557 92.7793 55.6557C93.6963 55.6557 94.4773 55.9337 95.1222 56.4898C95.4416 56.7679 95.7522 57.1673 96.054 57.6879ZM107.866 61.2554L110.049 63.9C110.552 63.3439 111.001 62.8173 111.398 62.3204L112.587 63.545C112.291 63.9592 111.815 64.5212 111.158 65.2312L113.403 68H111.132L109.925 66.518C109.623 66.8315 109.283 67.1185 108.904 67.3788C108.46 67.6924 108.058 67.9142 107.697 68.0444C107.348 68.1745 106.934 68.2396 106.455 68.2396C105.236 68.2396 104.263 67.8255 103.535 66.9972C102.932 66.3109 102.63 65.5299 102.63 64.6543C102.63 63.5835 103.1 62.6635 104.041 61.8944C104.147 61.8056 104.47 61.5749 105.008 61.2022C105.127 61.1193 105.233 61.0424 105.328 60.9714C104.529 60.1136 104.13 59.2735 104.13 58.4511C104.13 57.6465 104.408 56.9691 104.964 56.4189C105.455 55.9337 106.144 55.6911 107.032 55.6911C107.907 55.6911 108.605 55.9485 109.126 56.4632C109.653 56.9779 109.916 57.5962 109.916 58.318C109.916 58.8682 109.735 59.3829 109.375 59.8621C109.091 60.2408 108.588 60.7052 107.866 61.2554ZM106.419 62.2937C105.958 62.6073 105.606 62.8617 105.363 63.0569C104.712 63.5835 104.387 64.0982 104.387 64.6011C104.387 64.9265 104.494 65.2608 104.707 65.6039C105.115 66.2547 105.668 66.5801 106.366 66.5801C106.904 66.5801 107.469 66.3434 108.061 65.8701C108.31 65.6749 108.561 65.4501 108.815 65.1957L106.419 62.2937ZM106.81 59.9775C107.159 59.7113 107.416 59.5101 107.582 59.374C107.99 59.0427 108.194 58.6789 108.194 58.2825C108.194 57.9334 108.07 57.6613 107.821 57.466C107.597 57.2945 107.327 57.2087 107.014 57.2087C106.618 57.2087 106.31 57.3388 106.091 57.5992C105.925 57.7944 105.842 58.0133 105.842 58.2559C105.842 58.6108 105.984 58.9599 106.268 59.303C106.57 59.6699 106.751 59.8947 106.81 59.9775Z" fill="black"/>
+  <path d="M21.0294 87L23.5764 73.9723L27.7385 83.3881L32.0426 73.9723L34.3322 87H32.4597L31.2972 79.6875L27.7119 87.568L24.2154 79.6786L22.9197 87H21.0294ZM42.6742 74.6557C44.5082 74.6557 46.0524 75.3419 47.3067 76.7145C48.4189 77.9274 48.9751 79.3414 48.9751 80.9565C48.9751 82.0688 48.694 83.11 48.132 84.0803C47.5758 85.0387 46.8156 85.799 45.8512 86.361C44.8573 86.9408 43.7687 87.2307 42.5855 87.2307C41.5383 87.2307 40.5355 86.9704 39.577 86.4498C38.4233 85.8227 37.5625 84.9648 36.9946 83.8762C36.539 83.0006 36.3112 82.0066 36.3112 80.8944C36.3112 79.1668 36.9561 77.6848 38.2459 76.4483C38.9262 75.7916 39.7131 75.3124 40.6065 75.0106C41.3046 74.774 41.9938 74.6557 42.6742 74.6557ZM42.6564 76.3773C41.2365 76.3773 40.0888 76.9098 39.2132 77.9747C38.5091 78.8326 38.1571 79.8117 38.1571 80.9121C38.1571 82.2551 38.6067 83.3585 39.506 84.2223C40.3994 85.0802 41.4318 85.5091 42.6032 85.5091C43.4433 85.5091 44.2213 85.2961 44.9372 84.8701C45.6708 84.4323 46.2269 83.8496 46.6056 83.1219C46.9546 82.4592 47.1292 81.7345 47.1292 80.9476C47.1292 79.6756 46.7002 78.59 45.8424 77.6907C44.9963 76.8151 43.9344 76.3773 42.6564 76.3773ZM51.2735 87V74.8864H53.8205C55.1162 74.8864 56.1367 75.0254 56.8822 75.3035C58.2074 75.7945 59.2102 76.6524 59.8906 77.8771C60.3876 78.7764 60.6361 79.7969 60.6361 80.9388C60.6361 83.039 59.8285 84.6719 58.2133 85.8374C57.4383 86.3936 56.6367 86.7367 55.8084 86.8669C55.2641 86.9556 54.5896 87 53.785 87H51.2735ZM53.1017 85.2784H53.927C54.8558 85.2784 55.5983 85.1719 56.1545 84.9589C57.036 84.6157 57.7164 84.0389 58.1956 83.2284C58.592 82.5539 58.7902 81.7937 58.7902 80.9476C58.7902 79.9537 58.521 79.0751 57.9826 78.3119C57.4442 77.5546 56.7165 77.0547 55.7995 76.8121C55.3025 76.6761 54.6784 76.608 53.927 76.608H53.1017V85.2784ZM64.7804 74.8864V87H62.9523V74.8864H64.7804ZM73.7347 76.608L69.5194 76.608V79.51L73.5928 79.51V81.2316L69.5194 81.2316V87H67.6912V74.8864H73.7347V76.608ZM77.6839 74.8864V87H75.8557V74.8864H77.6839ZM87.286 76.608H82.4228V79.51H87.1352V81.2316H82.4228V85.2784H87.286V87H80.5947V74.8864H87.286V76.608ZM93.7821 81.8439L97.536 87H95.2996L91.8386 82.0392H91.5103V87H89.6821V74.8864H91.8209C92.7379 74.8864 93.4538 74.9603 93.9685 75.1082C94.8323 75.3567 95.486 75.8389 95.9297 76.5548C96.2847 77.1287 96.4622 77.7587 96.4622 78.445C96.4622 79.0781 96.3084 79.6727 96.0007 80.2288C95.5274 81.0926 94.7879 81.631 93.7821 81.8439ZM91.5103 80.4507H92.096C92.9006 80.4507 93.507 80.3057 93.9152 80.0158C94.424 79.6608 94.6784 79.1461 94.6784 78.4717C94.6784 77.8386 94.4418 77.3564 93.9685 77.0251C93.5662 76.7471 92.9627 76.608 92.1581 76.608H91.5103V80.4507Z" fill="black"/>
+  <path d="M11 66L4 73.5L11 81" stroke="black" stroke-width="2"/>
+  <path d="M73.3333 11.6667H70.4367C71.379 10.836 72.127 9.80813 72.6276 8.656C73.1282 7.50386 73.3691 6.25568 73.3333 5C73.3333 4.55797 73.1577 4.13405 72.8452 3.82149C72.5326 3.50893 72.1087 3.33333 71.6667 3.33333C71.2246 3.33333 70.8007 3.50893 70.4882 3.82149C70.1756 4.13405 70 4.55797 70 5C70 9.37 66.0483 10.8833 63.0433 11.4017C64.1525 9.43509 64.8202 7.25061 65 5C65 3.67392 64.4732 2.40215 63.5355 1.46447C62.5979 0.526784 61.3261 0 60 0C58.6739 0 57.4021 0.526784 56.4645 1.46447C55.5268 2.40215 55 3.67392 55 5C55.1798 7.25061 55.8475 9.43509 56.9567 11.4017C53.9517 10.8833 50 9.37 50 5C50 4.55797 49.8244 4.13405 49.5118 3.82149C49.1993 3.50893 48.7754 3.33333 48.3333 3.33333C47.8913 3.33333 47.4674 3.50893 47.1548 3.82149C46.8423 4.13405 46.6667 4.55797 46.6667 5C46.6309 6.25568 46.8718 7.50386 47.3724 8.656C47.873 9.80813 48.621 10.836 49.5633 11.6667H46.6667C44.8986 11.6667 43.2029 12.369 41.9526 13.6193C40.7024 14.8695 40 16.5652 40 18.3333V20C40 20.8841 40.3512 21.7319 40.9763 22.357C41.6014 22.9821 42.4493 23.3333 43.3333 23.3333V31.6667C43.336 33.876 44.2148 35.9941 45.777 37.5563C47.3393 39.1185 49.4573 39.9974 51.6667 40H68.3333C70.5427 39.9974 72.6607 39.1185 74.223 37.5563C75.7852 35.9941 76.664 33.876 76.6667 31.6667V23.3333C77.5507 23.3333 78.3986 22.9821 79.0237 22.357C79.6488 21.7319 80 20.8841 80 20V18.3333C80 16.5652 79.2976 14.8695 78.0474 13.6193C76.7971 12.369 75.1014 11.6667 73.3333 11.6667ZM60 3.33333C60.442 3.33333 60.8659 3.50893 61.1785 3.82149C61.4911 4.13405 61.6667 4.55797 61.6667 5C61.4655 6.77138 60.8979 8.48151 60 10.0217C59.1021 8.48151 58.5345 6.77138 58.3333 5C58.3333 4.55797 58.5089 4.13405 58.8215 3.82149C59.134 3.50893 59.558 3.33333 60 3.33333ZM43.3333 18.3333C43.3333 17.4493 43.6845 16.6014 44.3096 15.9763C44.9348 15.3512 45.7826 15 46.6667 15H58.3333V20H43.3333V18.3333ZM46.6667 31.6667V23.3333H58.3333V36.6667H51.6667C50.3406 36.6667 49.0688 36.1399 48.1311 35.2022C47.1935 34.2645 46.6667 32.9927 46.6667 31.6667ZM73.3333 31.6667C73.3333 32.9927 72.8065 34.2645 71.8689 35.2022C70.9312 36.1399 69.6594 36.6667 68.3333 36.6667H61.6667V23.3333H73.3333V31.6667ZM61.6667 20V15H73.3333C74.2174 15 75.0652 15.3512 75.6904 15.9763C76.3155 16.6014 76.6667 17.4493 76.6667 18.3333V20H61.6667Z" fill="black"/>
+  </svg>
+</div>
+  
+<div id="nwsDrawer" class="nwsDrawer">
+  <div class="nwsDrawer-content">
+    <span id="nwsCloseDrawer">X</span>
+    <div class="nwsTab-container">
+      <button class="nwsTab" id="nwsAddonsTab">Add ons</button>
+      <button class="nwsTab" id="nwsModifiersTab">Modifiers</button>
+    </div>
+    <div id="nwsAddonsContent" class="nwsTab-content active">
+     {% assign collection_handle = 'Add-Ons' %}
+        {% assign collection = collections[collection_handle] %}
+          {% if collection %}
+            <div class="nws-drawer-items-wrapper">
+              {% for product in collection.products %}
+                <div class="nws-drawer-item" data-id="{{ forloop.index }}" data-product-id="{{ product.selected_or_first_available_variant.id }}">
+                  <img src="{{ product.featured_image | img_url : '135x' }}"/>
+                  <span class="nws-item-title">{{ product.title }}</span>
+                  <p class="nws-item-price">{{ product.price | money }}</p>
+                     <input type="hidden" name="id[]" value="{{ product.selected_or_first_available_variant.id }}" data-qty="1" class="nws-hidden-val" id="p_v{{ forloop.index }}" data-id="{{ product.selected_or_first_available_variant.id }}">
+                   </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p>No products found in this collection.</p>
+          {% endif %}
+    </div>
+    <div id="nwsModifiersContent" class="nwsTab-content">
+      {% assign collection_handle = 'modifiers' %}
+        {% assign collection = collections[collection_handle] %}
+          {% if collection %}
+            <div class="nws-drawer-items-wrapper">
+              {% for product in collection.products %}
+               <div class="nws-drawer-item" data-id="{{ forloop.index }}" data-product-id="{{ product.selected_or_first_available_variant.id }}">
+                  <img src="{{ product.featured_image | img_url : '135x' }}"/>
+                  <span class="nws-item-title">{{ product.title }}</span>
+                  <p class="nws-item-price">{{ product.price | money }}</p>
+                       <input type="hidden" name="id[]" value="{{ product.selected_or_first_available_variant.id }}" data-qty="1" class="nws-hidden-val" id="p_v{{ forloop.index }}" data-id="{{ product.selected_or_first_available_variant.id }}">
+               </div>
+              {% endfor %}
+           </div>
+          {% else %}
+            <p>No products found in this collection.</p>
+          {% endif %}
+    </div>
+  </div>
+</div>
+<div id="overlay" class="overlay"></div>
+<!-- end nws-pdp-template -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+// Event listener for opening the color drawer
+$('#color-button').on('click', function() {
+  $('#color-drawer').addClass('open');
+  $('#d_overlay').addClass('open'); // Add overlay
+});
+
+// Event listener for closing the color drawer
+$('#close-drawer, #d_overlay').on('click', function() {
+  $('#color-drawer').removeClass('open');
+  $('#d_overlay').removeClass('open'); // Remove overlay
+});
+
+// Event listener for color selection
+$('.color-swatch').on('click', function() {
+  var selectedColor = $(this).data('color');
+  $('#color-button').text(selectedColor); // Update color button text
+  $('#color-drawer').removeClass('open');
+  $('#d_overlay').removeClass('open'); // Remove overlay
+});
+
+// Close the drawer when clicking outside the drawer
+$(document).on('click', function(event) {
+  if (!$(event.target).closest('#color-drawer').length && !$(event.target).is('#color-button')) {
+    $('#color-drawer').removeClass('open');
+    $('#d_overlay').removeClass('open'); // Remove overlay
+  }
+});
+
+  $(document).ready(function() {
+    $('.nws-tab').click(function() {
+        var index = $(this).index();
+        
+        $('.nws-tab, .nws-tab-content').removeClass('nws-active');
+        
+        $(this).addClass('nws-active');
+        $('.nws-tab-content').eq(index).addClass('nws-active');
+    });
+});
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const product = {{ product | json }};
+    const variantSelectors = document.querySelectorAll('.nws-option-selector input[type="radio"]');
+
+    function formatMoney(cents, format) {
+        if (typeof cents === 'string') {
+            cents = cents.replace('.', '');
+        }
+        var value = '';
+        var placeholderRegex = /\{\{\s*(\w+)\s*\}\}/;
+        var formatString = (format || this.money_format);
+
+        function defaultOption(opt, def) {
+            return (typeof opt === 'undefined' ? def : opt);
+        }
+
+        function formatWithDelimiters(number, precision, thousands, decimal) {
+            precision = defaultOption(precision, 2);
+            thousands = defaultOption(thousands, ',');
+            decimal = defaultOption(decimal, '.');
+
+            if (isNaN(number) || number === null) {
+                return 0;
+            }
+
+            number = (number / 100.0).toFixed(precision);
+
+            var parts = number.split('.');
+            var dollarsAmount = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + thousands);
+            var centsAmount = parts[1] ? (decimal + parts[1]) : '';
+
+            return dollarsAmount + centsAmount;
+        }
+
+        switch (formatString.match(placeholderRegex)[1]) {
+            case 'amount':
+                value = formatWithDelimiters(cents, 2);
+                break;
+            case 'amount_no_decimals':
+                value = formatWithDelimiters(cents, 0);
+                break;
+            case 'amount_with_comma_separator':
+                value = formatWithDelimiters(cents, 2, '.', ',');
+                break;
+            case 'amount_no_decimals_with_comma_separator':
+                value = formatWithDelimiters(cents, 0, '.', ',');
+                break;
+        }
+
+        return formatString.replace(placeholderRegex, value);
+    }
+
+    function updatePrice(variant) {
+        const priceElement = document.getElementById('product-price');
+        const comparePriceElement = document.getElementById('compare-price');
+
+        if (priceElement) {
+            priceElement.textContent = formatMoney(variant.price, '{{ shop.money_format }}');
+        }
+
+        if (comparePriceElement) {
+            if (variant.compare_at_price > variant.price) {
+                comparePriceElement.textContent = formatMoney(variant.compare_at_price, '{{ shop.money_format }}');
+                comparePriceElement.style.display = 'inline';
+            } else {
+                comparePriceElement.style.display = 'none';
+            }
+        }
+    }
+
+    function findVariant(selectedOptions) {
+        return product.variants.find(variant => {
+            return variant.options.every((option, index) => option.toLowerCase().replace(/\s+/g, '') === selectedOptions[index]);
+        });
+    }
+
+    function onVariantChange() {
+        const selectedOptions = Array.from(variantSelectors).map(input => {
+            if (input.checked) {
+                return input.value.toLowerCase().replace(/\s+/g, '');
+            }
+        }).filter(Boolean);
+
+        if (selectedOptions.length === product.options.length) {
+            const selectedVariant = findVariant(selectedOptions);
+
+            if (selectedVariant) {
+                updatePrice(selectedVariant);
+            }
+        }
+    }
+
+    variantSelectors.forEach(selector => {
+        selector.addEventListener('change', onVariantChange);
+    });
+
+    onVariantChange();
+});
+
+</script>
+{% schema %}
+{
+  "name": "NWS - PDP Template",
+  "settings": [
+    {
+      "type": "color",
+      "id": "section-color",
+      "label": "Section BG Color"
+    },
+    {
+      "type": "color",
+      "id": "custom-color",
+      "label": "Page Color"
+    },
+    {
+      "type": "richtext",
+      "id": "desc",
+      "label": "Descption"
+    },
+    {
+      "type": "header",
+      "content": "MONEY BACK GUARANTEE"
+    },
+    {
+      "type": "image_picker",
+      "id": "img",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Content"
+    }
+  ]
+}
+{% endschema %}
